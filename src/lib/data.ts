@@ -3,104 +3,95 @@ export const userData = {
   username: "PannnTastic",
   nickname: "PannnTastic",
   title: "Information Technology Student & Full Stack Developer",
-  bio: "Information Technology student at Universitas Muhammadiyah Yogyakarta, specializing in backend development and machine learning. Passionate about building scalable systems and intelligent applications.",
+  bio: "Information Technology student at Universitas Muhammadiyah Yogyakarta. Focus on backend development and machine learning. Building scalable systems and intelligent applications.",
   location: "Yogyakarta, Indonesia",
   email: "pannntastic@gmail.com",
-  avatar: "https://avatars.githubusercontent.com/u/PannnTastic",
+  avatar: "/images/profile.jpg",
   github: "https://github.com/PannnTastic",
   linkedin: "https://www.linkedin.com/in/alfan-alfian-4a6571333/",
   twitter: "https://twitter.com/pannntastic",
   website: "https://pannntastic.dev",
+  cv: "/files/CV-Ahmad-Alfan-Alfian-Irfan.pdf",
   stats: {
     publicRepos: 25,
     followers: 150,
     following: 100,
     stars: 500,
   },
-  // Education
   education: {
     university: "Universitas Muhammadiyah Yogyakarta",
     degree: "Bachelor of Engineering",
     major: "Information Technology",
     startYear: 2023,
-    endYear: null, // Currently studying
+    endYear: null,
     status: "Currently Studying",
   },
 };
 
-// Updated projects based on actual GitHub repos with proper tech stacks
 export const projects = [
   {
     id: 1,
-    name: "portfolio-website",
-    description: "Personal portfolio website built with Next.js, TypeScript, and Three.js featuring 3D animations",
-    tech: ["Next.js", "TypeScript", "Tailwind CSS", "Three.js", "Framer Motion"],
+    name: "Portfolio Website",
+    description: "Portfolio pribadi dibangun dengan Next.js, TypeScript, dan Tailwind CSS. Desain clean, responsif, dan performant.",
+    tech: ["Next.js", "TypeScript", "Tailwind CSS", "Framer Motion"],
     github: "https://github.com/PannnTastic/portfolio-website",
     demo: "https://pannntastic.dev",
-    stars: 15,
-    forks: 5,
-    image: "/projects/project1.jpg",
+    image: "/images/projects/portfolio.jpg",
+    featured: false,
   },
   {
     id: 2,
-    name: "web-based-apps",
-    description: "Collection of web-based applications and experiments with modern frontend technologies",
+    name: "Web-Based Apps",
+    description: "Kumpulan aplikasi web dan eksperimen dengan teknologi frontend modern.",
     tech: ["JavaScript", "HTML", "CSS", "React", "Node.js"],
     github: "https://github.com/PannnTastic/web-based-apps",
     demo: "#",
-    stars: 8,
-    forks: 3,
-    image: "/projects/project2.jpg",
+    image: "/images/projects/webapps.jpg",
+    featured: false,
   },
   {
     id: 3,
-    name: "java-projects",
-    description: "Various Java programming projects and assignments from university coursework",
+    name: "Java Projects",
+    description: "Berbagai proyek Java dan tugas kuliah dari mata kuliah universitas.",
     tech: ["Java", "OOP", "JavaFX", "MySQL"],
     github: "https://github.com/PannnTastic/java-projects",
     demo: "#",
-    stars: 5,
-    forks: 2,
-    image: "/projects/project3.jpg",
+    image: "/images/projects/java.jpg",
+    featured: false,
   },
   {
     id: 4,
-    name: "python-scripts",
-    description: "Python scripts and automation tools for data processing and task automation",
+    name: "Python Scripts",
+    description: "Skrip Python dan alat otomatisasi untuk pemrosesan data dan tugas rutin.",
     tech: ["Python", "Pandas", "NumPy", "BeautifulSoup"],
     github: "https://github.com/PannnTastic/python-scripts",
     demo: "#",
-    stars: 12,
-    forks: 4,
-    image: "/projects/project4.jpg",
+    image: "/images/projects/python.jpg",
+    featured: false,
   },
   {
     id: 5,
-    name: "mobile-app-umy",
-    description: "Mobile application project for university assignment using React Native",
+    name: "Mobile App UMY",
+    description: "Aplikasi mobile untuk tugas kuliah menggunakan React Native.",
     tech: ["React Native", "Expo", "Firebase", "JavaScript"],
     github: "https://github.com/PannnTastic/mobile-app-umy",
     demo: "#",
-    stars: 6,
-    forks: 2,
-    image: "/projects/project5.jpg",
+    image: "/images/projects/mobile.jpg",
+    featured: false,
   },
   {
     id: 6,
-    name: "database-management",
-    description: "Database design and management projects with SQL and NoSQL implementations",
+    name: "Database Management",
+    description: "Desain dan manajemen database dengan implementasi SQL dan NoSQL.",
     tech: ["MySQL", "PostgreSQL", "MongoDB", "PHP"],
     github: "https://github.com/PannnTastic/database-management",
     demo: "#",
-    stars: 9,
-    forks: 3,
-    image: "/projects/project6.jpg",
+    image: "/images/projects/db.jpg",
+    featured: false,
   },
 ];
 
-// Updated skills based on actual GitHub repositories and focus on Backend & ML
 export const skills = [
-  // Programming Languages
   { name: "JavaScript", level: 85, category: "frontend" },
   { name: "TypeScript", level: 80, category: "frontend" },
   { name: "Go", level: 75, category: "backend" },
@@ -108,8 +99,6 @@ export const skills = [
   { name: "Java", level: 75, category: "backend" },
   { name: "PHP", level: 65, category: "backend" },
   { name: "HTML/CSS", level: 90, category: "frontend" },
-  
-  // Frameworks & Libraries
   { name: "React", level: 82, category: "frontend" },
   { name: "Next.js", level: 78, category: "frontend" },
   { name: "React Native", level: 65, category: "frontend" },
@@ -117,21 +106,15 @@ export const skills = [
   { name: "Node.js", level: 80, category: "backend" },
   { name: "Gin", level: 70, category: "backend" },
   { name: "JavaFX", level: 60, category: "frontend" },
-  
-  // Database
   { name: "MySQL", level: 78, category: "backend" },
   { name: "PostgreSQL", level: 75, category: "backend" },
   { name: "MongoDB", level: 72, category: "backend" },
   { name: "Redis", level: 65, category: "backend" },
   { name: "Firebase", level: 70, category: "backend" },
-  
-  // Machine Learning & Data
   { name: "TensorFlow", level: 60, category: "tools" },
   { name: "Scikit-learn", level: 65, category: "tools" },
   { name: "Pandas", level: 75, category: "tools" },
   { name: "NumPy", level: 72, category: "tools" },
-  
-  // Tools & Others
   { name: "Git/GitHub", level: 85, category: "tools" },
   { name: "Docker", level: 68, category: "tools" },
   { name: "Three.js", level: 55, category: "frontend" },
@@ -139,40 +122,76 @@ export const skills = [
   { name: "VS Code", level: 90, category: "tools" },
 ];
 
-// Updated experiences - reflecting student journey
 export const experiences = [
   {
     id: 1,
-    role: "Information Technology Student",
+    role: "Mahasiswa Teknik Informatika",
     company: "Universitas Muhammadiyah Yogyakarta",
-    period: "2023 - Present",
-    description: "Pursuing Bachelor's degree in Information Technology. Focusing on software development, database management, backend systems, and machine learning.",
+    period: "2023 - Sekarang",
+    description: "Melanjutkan gelar Sarjana Teknik Informatika. Fokus pada pengembangan perangkat lunak, manajemen basis data, sistem backend, dan machine learning.",
   },
   {
     id: 2,
     role: "Backend Developer (Self-Learning)",
-    company: "Personal Projects",
-    period: "2023 - Present",
-    description: "Building scalable backend systems using Go, Node.js, and Python. Exploring APIs, microservices, and database optimization.",
+    company: "Proyek Pribadi",
+    period: "2023 - Sekarang",
+    description: "Membangun sistem backend skalabel menggunakan Go, Node.js, dan Python. Menjelajahi API, mikroservis, dan optimasi basis data.",
   },
   {
     id: 3,
     role: "Machine Learning Enthusiast",
-    company: "Self-Study & University Projects",
-    period: "2024 - Present",
-    description: "Learning machine learning concepts, building predictive models with Python, TensorFlow, and Scikit-learn. Working on data analysis projects.",
+    company: "Studi Mandiri & Proyek Kampus",
+    period: "2024 - Sekarang",
+    description: "Mempelajari konsep machine learning, membangun model prediktif dengan Python, TensorFlow, dan Scikit-learn. Bekerja pada proyek analisis data.",
   },
 ];
 
-// Education timeline
-export const educationTimeline = [
+export const featuredSites = [
   {
     id: 1,
-    institution: "Universitas Muhammadiyah Yogyakarta",
-    degree: "Bachelor of Engineering (B.Eng.)",
-    field: "Information Technology",
-    period: "2023 - Present",
-    description: "Focusing on software engineering, backend development, database systems, and machine learning.",
-    status: "Currently Enrolled",
+    name: "Kopingaji",
+    url: "https://kopingaji.com/",
+    category: "Ecommerce",
+    description: "Platform ecommerce untuk usaha lokal.",
+    image: "/images/featured/kopingaji.jpg",
   },
+  {
+    id: 2,
+    name: "Berkah Seka Wanta Tangguh",
+    url: "https://berkahsekawantangguh.com/",
+    category: "Company Profile + Ecommerce",
+    description: "Profil perusahaan dan ecommerce untuk bahan bangunan.",
+    image: "/images/featured/berkahseka.jpg",
+  },
+  {
+    id: 3,
+    name: "Merzzmail",
+    url: "https://merzzmail.my.id/",
+    category: "Mail Server",
+    description: "Sistem server email.",
+    image: "/images/featured/merzzmail.jpg",
+  },
+  {
+    id: 4,
+    name: "Bimbel Aksara",
+    url: "https://bimbelaksara.vercel.app/",
+    category: "LMS + Company Profile",
+    description: "Sistem informasi manajemen pembelajaran dan profil perusahaan (proyek capstone).",
+    image: "/images/featured/bimbelaksara.jpg",
+  },
+  {
+    id: 5,
+    name: "OISL Website",
+    url: "https://oisl-website.pages.dev/",
+    category: "Laboratorium Riset",
+    description: "Website laboratorium riset.",
+    image: "/images/featured/oisl.jpg",
+  },
+];
+
+export const researchTopics = [
+  "Machine Learning & Predictive Modeling",
+  "Backend System Design & Microservices",
+  "Database Optimization",
+  "Natural Language Processing",
 ];

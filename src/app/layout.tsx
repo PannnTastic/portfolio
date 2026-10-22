@@ -1,43 +1,21 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import ClientLayout from "@/components/ClientLayout";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
+const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "PannnTastic | Full Stack Developer",
-  description: "Portfolio of PannnTastic - Full Stack Developer specializing in modern web technologies",
-  keywords: ["Full Stack Developer", "Web Developer", "React", "Next.js", "TypeScript"],
-  authors: [{ name: "PannnTastic" }],
-  openGraph: {
-    title: "PannnTastic | Full Stack Developer",
-    description: "Portfolio of PannnTastic - Full Stack Developer",
-    type: "website",
-  },
+  title: "PannnTastic | Ahmad Alfan Alfian Irfan",
+  description: "Portfolio Ahmad Alfan Alfian Irfan - Mahasiswa Teknik Informatika & Full Stack Developer di UMY",
+  authors: [{ name: "Ahmad Alfan Alfian Irfan" }],
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-      suppressHydrationWarning
-    >
-      <body className="min-h-full flex flex-col bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
-        <ClientLayout>{children}</ClientLayout>
+    <html lang="id" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`} suppressHydrationWarning>
+      <body className="min-h-full flex flex-col bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+        {children}
       </body>
     </html>
   );
