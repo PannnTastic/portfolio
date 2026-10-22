@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useMounted } from "@/hooks/useMounted";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 
 export default function CustomCursor() {
   const [isHovering, setIsHovering] = useState(false);
   const [isPointer, setIsPointer] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
 
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
@@ -17,15 +18,14 @@ export default function CustomCursor() {
   const cursorYSpring = useSpring(cursorY, springConfig);
 
   useEffect(() => {
-    setMounted(true);
     
     // Only show custom cursor on desktop
     const isMobile = window.matchMedia("(max-width: 768px)").matches;
     if (isMobile) return;
 
-    setIsVisible(true);
 
     const moveCursor = (e: MouseEvent) => {
+      setIsVisible(true);
       cursorX.set(e.clientX);
       cursorY.set(e.clientY);
     };

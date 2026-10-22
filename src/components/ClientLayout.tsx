@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMounted } from "@/hooks/useMounted";
 import { Toaster } from "sonner";
 import dynamic from "next/dynamic";
 import ThemeProvider from "./ThemeProvider";
@@ -18,11 +18,8 @@ export default function ClientLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   return (
     <ThemeProvider>

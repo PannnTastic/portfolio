@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Mail, MapPin, Github, Linkedin, Twitter } from "lucide-react";
+import { Mail, MapPin, Github, Linkedin } from "lucide-react";
 import { userData } from "@/lib/data";
 import ContactForm from "@/components/ContactForm";
 import MagneticButton from "@/components/MagneticButton";

@@ -4,6 +4,11 @@ import { useRef, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
+function seededValue(index: number) {
+  const value = Math.sin(index * 127.1 + 311.7) * 43758.5453;
+  return value - Math.floor(value);
+}
+
 function Particles() {
   const mesh = useRef<THREE.Points>(null);
 
@@ -14,12 +19,12 @@ function Particles() {
     const colors = new Float32Array(count * 3);
     
     for (let i = 0; i < count; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 20;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 20;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 20;
+      positions[i * 3] = (seededValue(i * 4 + 0) - 0.5) * 20;
+      positions[i * 3 + 1] = (seededValue(i * 4 + 1) - 0.5) * 20;
+      positions[i * 3 + 2] = (seededValue(i * 4 + 2) - 0.5) * 20;
       
       const color = new THREE.Color();
-      color.setHSL(Math.random() * 0.2 + 0.5, 0.8, 0.5);
+      color.setHSL(seededValue(i * 4 + 3) * 0.2 + 0.5, 0.8, 0.5);
       colors[i * 3] = color.r;
       colors[i * 3 + 1] = color.g;
       colors[i * 3 + 2] = color.b;

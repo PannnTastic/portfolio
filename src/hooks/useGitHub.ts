@@ -35,7 +35,6 @@ async function fetchReposDirectly(
   sort: "updated" | "stars" | "forks" = "updated",
   limit: number = 10
 ): Promise<ProcessedRepo[]> {
-  const cacheKey = `${sort}-${limit}`;
   const cached = cache.repos;
   
   if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {

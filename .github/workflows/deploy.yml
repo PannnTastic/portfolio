@@ -1,124 +1,58 @@
-name: CI/CD Pipeline
+name: Portfolio CI/CD
 
 on:
   push:
-    branches: [main, master]
+    branches: [main]
   pull_request:
-    branches: [main, master]
+    branches: [main]
+  workflow_dispatch:
 
-env:
-  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+permissions:
+  contents: read
+
+concurrency:
+  group: portfolio-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  # Lint and Type Check
-  lint-and-typecheck:
+  check:
+    name: Lint and build
     runs-on: ubuntu-latest
-    name: 🔍 Lint & Type Check
-    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run TypeScript check
-        run: npx tsc --noEmit
-
-      - name: Run ESLint
-        run: npm run lint || true
-
-  # Build Test
-  build:
+  deploy:
+    name: Deploy to Vercel
+    needs: check
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
-    name: 🏗️ Build Test
-    needs: lint-and-typecheck
-    
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      DEPLOY_ENV: ${{ github.event_name == 'pull_request' && 'preview' || 'production' }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build project
-        run: npm run build
-        env:
-          CI: true
-
-  # Deploy to Vercel (Preview for PR)
-  deploy-preview:
-    runs-on: ubuntu-latest
-    name: 🚀 Deploy Preview
-    needs: build
-    if: github.event_name == 'pull_request'
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
-
-      - name: Pull Vercel Environment Information
-        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Build Project Artifacts
-        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Deploy Project Artifacts to Vercel
-        run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
-
-  # Deploy to Vercel (Production for main branch)
-  deploy-production:
-    runs-on: ubuntu-latest
-    name: 🚀 Deploy Production
-    needs: build
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
-
-      - name: Pull Vercel Environment Information
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Build Project Artifacts
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Deploy Project Artifacts to Vercel
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
-
-  # Notify on success/failure
-  notify:
-    runs-on: ubuntu-latest
-    name: 📢 Notify
-    needs: [deploy-production]
-    if: always()
-    
-    steps:
-      - name: Deployment Status
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm install --global vercel@50.29.0
+      - name: Pull project settings
+        run: vercel pull --yes --environment="$DEPLOY_ENV" --token="$VERCEL_TOKEN"
+      - name: Build and deploy
+        shell: bash
         run: |
-          if [ "${{ needs.deploy-production.result }}" == "success" ]; then
-            echo "✅ Deployment successful!"
-            echo "🌐 Live at: https://my-portfolio-re0u8h071-pannntastics-projects.vercel.app"
-          else
-            echo "❌ Deployment failed!"
-            exit 1
-          fi
+          flags=()
+          if [ "$DEPLOY_ENV" = "production" ]; then flags+=(--prod); fi
+          vercel build "${flags[@]}" --token="$VERCEL_TOKEN"
+          vercel deploy --prebuilt "${flags[@]}" --token="$VERCEL_TOKEN" > deployment-url.txt
+          printf 'Deployment: %s\n' "$(cat deployment-url.txt)" >> "$GITHUB_STEP_SUMMARY"

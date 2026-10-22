@@ -9,7 +9,7 @@ interface CacheData<T> {
 }
 
 class GitHubCache {
-  private cache: Map<string, CacheData<any>> = new Map();
+  private cache: Map<string, CacheData<unknown>> = new Map();
 
   get<T>(key: string): T | null {
     const cached = this.cache.get(key);
@@ -20,7 +20,7 @@ class GitHubCache {
       return null;
     }
     
-    return cached.data;
+    return cached.data as T;
   }
 
   set<T>(key: string, data: T): void {

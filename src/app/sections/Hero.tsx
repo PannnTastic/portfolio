@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Github, Linkedin, Twitter, Mail, ChevronDown, Sparkles, Loader2 } from "lucide-react";
+import { Github, Linkedin, Mail, ChevronDown, Sparkles, Loader2 } from "lucide-react";
 import { userData } from "@/lib/data";
 import { useGitHubStats } from "@/hooks/useGitHub";
 import ParticlesBackground from "@/components/ParticlesBackground";
