@@ -2,12 +2,50 @@
 import Image from 'next/image';
 import Correspondence from './Correspondence';
 import OrganizationLogo from './OrganizationLogo';
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { ArrowDownToLine, ArrowLeft, ArrowRight, ArrowUpRight, BookOpen, List, X } from 'lucide-react';
 import { papers, profile, websites } from '@/lib/portfolio';
 const chapters = ['Introduction', 'Selected work', 'Research', 'Background', 'Contact'];
 const slugs = ['introduction', 'work', 'research', 'background', 'contact'];
 const external = { target: '_blank', rel: 'noopener noreferrer' };
+const CURL_SEGMENTS = 18;
+function TurningLeaf({ front, back, direction, onFinish }: { front: string; back: string; direction: string; onFinish: () => void }) {
+ const leafRef = useRef<HTMLDivElement>(null);
+ useLayoutEffect(() => {
+  const leaf = leafRef.current;
+  if (!leaf) return;
+  const width = leaf.offsetWidth;
+  const forward = direction === 'forward';
+  leaf.style.setProperty('--leaf-width', `${width}px`);
+  const timing: KeyframeAnimationOptions = { duration: 1050, easing: 'cubic-bezier(.42,0,.58,1)', fill: 'both' };
+  const turn = leaf.animate([
+   { transform: 'rotateY(0deg)' },
+   { transform: `rotateY(${forward ? -180 : 180}deg)` },
+  ], timing);
+  const bends = [...leaf.querySelectorAll<HTMLElement>('.curl-strip')].map((strip, index) => {
+   const frames = Array.from({ length: 25 }, (_, step) => {
+    const progress = step / 24;
+    const bend = 1.15 * Math.sin(Math.PI * progress);
+    const distance = forward ? index / CURL_SEGMENTS : 1 - index / CURL_SEGMENTS;
+    const angle = bend * distance;
+    const along = bend < .0001 ? width * distance : width * Math.sin(angle) / bend;
+    const depth = bend < .0001 ? 0 : width * (1 - Math.cos(angle)) / bend;
+    const x = forward ? along : width - along;
+    const tangent = bend * (distance + (forward ? .5 : -.5) / CURL_SEGMENTS);
+    return { transform: `translate3d(${x}px,0,${depth}px) rotateY(${(forward ? -1 : 1) * tangent}rad)` };
+   });
+   return strip.animate(frames, timing);
+  });
+  turn.onfinish = onFinish;
+  return () => { turn.onfinish = null; turn.cancel(); bends.forEach(animation => animation.cancel()); };
+ }, [direction, onFinish]);
+ return <div ref={leafRef} className={`curl-leaf ${direction}`}>
+  {Array.from({ length: CURL_SEGMENTS }, (_, index) => <div className="curl-strip" key={index} style={{ left: `${index * 100 / CURL_SEGMENTS}%`, width: `${100 / CURL_SEGMENTS}%` }}>
+   <div className="curl-face curl-front"><div className="curl-page" style={{ left: `calc(var(--leaf-width) * ${-index / CURL_SEGMENTS})` }} dangerouslySetInnerHTML={{ __html: front }}/></div>
+   <div className="curl-face curl-back"><div className="curl-page" style={{ left: `calc(var(--leaf-width) * ${-(CURL_SEGMENTS - 1 - index) / CURL_SEGMENTS})` }} dangerouslySetInnerHTML={{ __html: back }}/></div>
+  </div>)}
+ </div>;
+}
 function Authors({ names }: { names: string }) {
  return <>{names.split(/(Ahmad Alfan Alfian Irfan|Alfan Alfian Irfan)/g).map((name, index) =>
   name === 'Ahmad Alfan Alfian Irfan' || name === 'Alfan Alfian Irfan'
@@ -44,7 +82,7 @@ export default function PortfolioBook() {
  const finishFlip = useCallback(() => { setFlip(null); flipping.current = false; }, []);
  useEffect(() => {
   if (!flip) return;
-  const timer = window.setTimeout(finishFlip, flip.mode === 'leaf' ? 1100 : 500);
+  const timer = window.setTimeout(finishFlip, flip.mode === 'leaf' ? 1300 : 500);
   return () => window.clearTimeout(timer);
  }, [flip, finishFlip]);
 
@@ -104,16 +142,16 @@ export default function PortfolioBook() {
  </div>,
  <div className="spread" key="background">
   <Paper title="Background" note="Learning by doing" page={7}><h2>How I got<br/>here.</h2><p>I’m still at university, so this is a fairly short list. Alongside classes, I’ve had the chance to build systems during an internship and contribute to research with people from different backgrounds.</p><div className="experience"><article><span className="entry-meta">Research</span><h3 className="organization-title"><OrganizationLogo organization="vnv"/><span>AI V&amp;V Lab</span></h3><p>Research intern. My work here includes AI evaluation, driving policies, and verification. The papers are in the research chapter.</p></article><article><span className="entry-meta">Research</span><h3 className="organization-title"><OrganizationLogo organization="oisl"/><span>OISL</span></h3><p>Research intern in healthcare AI, with work on explainable knee X-ray assessment through Knee-xRAI. I also built the lab’s website.</p></article><article><span className="entry-meta">August – September 2025</span><h3 className="organization-title"><OrganizationLogo organization="pln"/><span>PLN Batam</span></h3><p>I built a substation management system during my internship, working with the internal team on what they needed to monitor.</p></article><article><span className="entry-meta">2023 – present</span><h3 className="organization-title"><OrganizationLogo organization="umy"/><span>Universitas Muhammadiyah Yogyakarta</span></h3><p>Studying Information Technology. This is where the coursework, student projects, and KMTI work fit into the story.</p></article></div></Paper>
-  <Paper title="Tools and a few other things" note="Always learning" page={8}><h3 className="small-heading">What I work with</h3><dl className="tool-list"><div><dt>Web & backend</dt><dd>JavaScript, TypeScript, React, Next.js, Node.js, Laravel, PHP, Go, REST APIs</dd></div><div><dt>Data & infrastructure</dt><dd>Python, MySQL, PostgreSQL, Docker, Git, automation, machine learning</dd></div><div><dt>Mobile</dt><dd>Flutter, Kotlin</dd></div></dl><h3 className="small-heading">A few other projects</h3><p>Not everything I’ve worked on has a website in the previous chapter. Binakata is about learning and early detection for children with dyslexia. MedSync handles referrals and patient queues. OceanCare brings marine conservation, learning, and participation together.</p><div className="recognition"><p>1st place, UI/UX Competition FAST UTM, 2024.</p><p>3rd place, National Hackathon APTIKOM, 2025.</p></div><a className="text-link" href={profile.cv} download>Read my full CV <ArrowDownToLine size={16}/></a></Paper>
+  <Paper title="Tools and a few other things" note="Always learning" page={8}><h3 className="small-heading">What I work with</h3><dl className="tool-list"><div><dt>Web & backend</dt><dd>JavaScript, TypeScript, React, Next.js, Node.js, Laravel, PHP, Go, REST APIs</dd></div><div><dt>Data & infrastructure</dt><dd>Python, MySQL, PostgreSQL, Docker, Git, automation, machine learning</dd></div><div><dt>Mobile</dt><dd>Flutter, Kotlin</dd></div></dl><h3 className="small-heading">A few other projects</h3><p>Not everything I’ve worked on has a website in the previous chapter. Binakata is about learning and early detection for children with dyslexia. MedSync handles referrals and patient queues. OceanCare brings marine conservation, learning, and participation together.</p><div className="recognition"><p>1st place, UI/UX Competition FAST UTM, 2024.</p><p>3rd place, National Hackathon APTIKOM, 2025.</p></div><a className="text-link" href={profile.cv} {...external}>Read my full CV <ArrowUpRight size={16}/></a></Paper>
  </div>,
  <div className="spread contact-spread" key="contact">
   <Paper title="Correspondence" note="Let’s talk" page={9}><Correspondence side="letter"/></Paper>
   <Paper title="Find me elsewhere" note="Stay in touch" page={10}><Correspondence side="social"/></Paper>
  </div>
  ];
- return <div className={`portfolio ${reading?'reading-mode':''}`}><a href="#book" className="skip-link">Skip to portfolio</a><header className="site-header"><a className="wordmark" href="#introduction" onClick={()=>navigate(0)}>alfan<span>.</span></a><span className="header-note">Alfan, on the web</span><a className="cv-link" href={profile.cv} download>Download CV <ArrowDownToLine size={16}/></a></header>
+ return <div className={`portfolio ${reading?'reading-mode':''}`}><a href="#book" className="skip-link">Skip to portfolio</a><header className="site-header"><a className="wordmark" href="#introduction" onClick={()=>navigate(0)}>alfan<span>.</span></a><span className="header-note">Alfan, on the web</span><div className="cv-actions"><a className="cv-link" href={profile.cv} {...external}>View CV <ArrowUpRight size={16}/></a><a className="cv-download" href={profile.cv} download aria-label="Download CV PDF" title="Download CV"><ArrowDownToLine size={16}/></a></div></header>
  <main id="book" tabIndex={-1}><div className="book-toolbar"><button className="contents-toggle" onClick={()=>setContents(!contents)} aria-expanded={contents} aria-controls="chapter-navigation">{contents?<X size={17}/>:<List size={17}/>} Contents</button><nav id="chapter-navigation" aria-label="Chapters" className={`chapter-nav ${contents?'is-open':''}`}>{chapters.map((name,i)=><button key={name} onClick={()=>navigate(i)} aria-current={!reading&&chapter===i?'page':undefined}>{name}</button>)}</nav><button className="reading-toggle" onClick={()=>{setReading(!reading);setContents(false);setFlip(null);flipping.current=false;}}>{reading?<BookOpen size={16}/>:<List size={16}/>} {reading?'Book view':'Read as a page'}</button></div>
- <div className="book-stage"><div className="book" ref={bookRef} onTouchStart={e=>{touch.current={x:e.touches[0].clientX,y:e.touches[0].clientY};}} onTouchEnd={e=>{if(!touch.current||reading)return;const dx=e.changedTouches[0].clientX-touch.current.x,dy=e.changedTouches[0].clientY-touch.current.y;if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5)navigate(chapter+(dx<0?1:-1));touch.current=null;}}>{spreads.map((spread,i)=><div className="chapter" key={slugs[i]} id={`chapter-${slugs[i]}`} hidden={!reading&&chapter!==i}>{spread}</div>)}{flip&&!reading&&<div className={`flip-layer ${flip.direction} flip-mode-${flip.mode}`} aria-hidden="true" inert>{flip.mode === 'fade' ? <div className="flip-mobile" onAnimationEnd={finishFlip} dangerouslySetInnerHTML={{__html:flip.front}}/> : <><div className="flip-under" dangerouslySetInnerHTML={{__html:flip.under}}/><div className="flip-leaf" onAnimationEnd={e=>{if(e.target!==e.currentTarget)return;finishFlip();}}><div className="flip-face flip-front" dangerouslySetInnerHTML={{__html:flip.front}}/><div className="flip-face flip-back" dangerouslySetInnerHTML={{__html:flip.back}}/></div></>}</div>}</div></div>
+ <div className="book-stage"><div className="book" ref={bookRef} onTouchStart={e=>{touch.current={x:e.touches[0].clientX,y:e.touches[0].clientY};}} onTouchEnd={e=>{if(!touch.current||reading)return;const dx=e.changedTouches[0].clientX-touch.current.x,dy=e.changedTouches[0].clientY-touch.current.y;if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5)navigate(chapter+(dx<0?1:-1));touch.current=null;}}>{spreads.map((spread,i)=><div className="chapter" key={slugs[i]} id={`chapter-${slugs[i]}`} hidden={!reading&&chapter!==i}>{spread}</div>)}{flip&&!reading&&<div className={`flip-layer ${flip.direction} flip-mode-${flip.mode}`} aria-hidden="true" inert>{flip.mode === 'fade' ? <div className="flip-mobile" onAnimationEnd={finishFlip} dangerouslySetInnerHTML={{__html:flip.front}}/> : <><div className="flip-under" dangerouslySetInnerHTML={{__html:flip.under}}/><TurningLeaf front={flip.front} back={flip.back} direction={flip.direction} onFinish={finishFlip}/></>}</div>}</div></div>
  {!reading&&<div className="book-controls"><button onClick={()=>navigate(chapter-1)} disabled={chapter===0} aria-label="Previous chapter"><ArrowLeft size={19}/><span>Previous</span></button><div aria-live="polite"><span>{chapters[chapter]}</span><span className="page-count">{chapter*2+1} — {chapter*2+2} / 10</span></div><button onClick={()=>navigate(chapter+1)} disabled={chapter===4} aria-label="Next chapter"><span>Next chapter</span><ArrowRight size={19}/></button></div>}</main>
  <footer className="site-footer"><span>© {new Date().getFullYear()} Ahmad Alfan Alfian Irfan</span><span className="navigation-hint">Thanks for reading this far.</span><a href={`mailto:${profile.email}`}>Say hello <ArrowUpRight size={14}/></a></footer></div>;
 }

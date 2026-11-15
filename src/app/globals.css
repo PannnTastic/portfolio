@@ -16,20 +16,19 @@
 .spread,.research-spread{height:690px;min-height:0}.paper{display:flex;flex-direction:column;padding-bottom:24px;overflow:hidden}.running-head{flex-shrink:0}.paper-content{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#b8bdc2 transparent;padding-right:10px;padding-bottom:14px}.paper-content:focus-visible{outline:2px solid var(--blue);outline-offset:3px}.page-bottom{position:static;flex-shrink:0;margin-top:18px}.intro-role{max-width:370px;font-size:21px;line-height:1.55}.nickname-accent{color:var(--blue);font-weight:600}.portrait-page .portrait{margin:0 0 22px;display:flex;align-items:flex-end;gap:20px}.portrait img{width:150px;height:165px;object-fit:cover;filter:none}.portrait figcaption{font-size:16px;max-width:130px}.portrait-bio h2{font-size:34px;letter-spacing:-.035em;margin:0 0 18px}.portrait-bio p{font-size:16px;line-height:1.7;margin-bottom:15px}.research-affiliations h3{font-size:23px;margin:20px 0 7px}.research-affiliations p{font-size:15px}.reading-mode .spread{height:auto;min-height:690px}.reading-mode .paper-content{overflow:visible}.reading-mode .paper{overflow:visible}.reading-mode .page-bottom{margin-top:auto;padding-top:25px}
 /* Preserve the stationary leaf until the turning leaf has settled over it. */
 .flip-layer{position:absolute;inset:0;pointer-events:none;z-index:6;perspective:2400px;isolation:isolate;--turn-time:900ms;--turn-ease:cubic-bezier(.45,0,.55,1)}
-.flip-leaf{position:absolute;left:50%;top:0;width:50%;height:100%;transform-origin:left center;transform-style:preserve-3d;z-index:1;animation:leaf-forward var(--turn-time) var(--turn-ease) both;will-change:transform}
-.flip-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden}
-.flip-face>.paper,.flip-under>.paper{width:100%;height:100%}
-.flip-face .paper-content{overflow:hidden}
-.flip-front{transform:translateZ(.3px)}
-.flip-back{transform:rotateY(180deg) translateZ(.3px)}
 .flip-under{position:absolute;inset:0 auto 0 0;width:50%;transform:translateZ(0);z-index:0}
+.flip-under>.paper{width:100%;height:100%}
 .flip-layer.backward .flip-under{left:50%}
-.flip-layer.backward .flip-leaf{left:0;transform-origin:right center;animation-name:leaf-backward}
-.flip-front:after,.flip-back:after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,#252c3538,transparent 65%);animation:leaf-shade var(--turn-time) var(--turn-ease) both}
-.flip-back:after{background:linear-gradient(270deg,#252c3528,transparent 65%)}
-@keyframes leaf-forward{from{transform:rotateY(0)}to{transform:rotateY(-180deg)}}
-@keyframes leaf-backward{from{transform:rotateY(0)}to{transform:rotateY(180deg)}}
-@keyframes leaf-shade{0%,100%{opacity:0}50%{opacity:1}}
+.curl-leaf{position:absolute;left:50%;top:0;width:50%;height:100%;transform-origin:left center;transform-style:preserve-3d;z-index:1;will-change:transform}
+.curl-leaf.backward{left:0;transform-origin:right center}
+.curl-strip{position:absolute;top:0;height:100%;left:0!important;transform-origin:left center;transform-style:preserve-3d;will-change:transform}
+.curl-face{position:absolute;inset:0;width:calc(100% + .65px);overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.curl-front{transform:translateZ(.2px)}
+.curl-back{transform:rotateY(180deg) translateZ(.2px)}
+.curl-back .curl-page{transform:translateX(.65px)}
+.curl-page{position:absolute;top:0;width:var(--leaf-width);height:100%}
+.curl-page>.paper{width:100%;height:100%;border-radius:0}
+.curl-page .paper-content{overflow:hidden}
 @keyframes leaf-dissolve{from{opacity:1}to{opacity:0}}
 .flip-mobile{animation:leaf-dissolve 360ms cubic-bezier(.22,1,.36,1) both;will-change:opacity}
 .correspondence-letter h2{font-size:clamp(34px,3.3vw,48px);margin:16px 0 26px;letter-spacing:-.05em}.correspondence-letter>p{font-family:var(--font-book);font-size:18px;line-height:1.65}.letter-form{display:flex;flex-direction:column;margin-top:25px}.letter-form label{font-family:var(--font-book);font-style:italic;font-size:17px;margin:13px 0 7px}.letter-form input,.letter-form textarea,.draft-status textarea{border:0;border-bottom:1px solid #85887e;border-radius:0;background:#eeece3;padding:11px 10px;font-family:var(--font-book);font-size:17px;color:var(--ink);width:100%;min-width:0}.letter-form textarea{resize:vertical;min-height:110px}.letter-form input:focus,.letter-form textarea:focus{outline:2px solid var(--blue);outline-offset:2px}.letter-form .form-note{font-size:13px;margin:15px 0 0;color:var(--muted)}.letter-form .primary-action{align-self:flex-start;margin-top:13px}.correspondence-social h2{font-size:43px;margin:16px 0 25px}.social-directory{display:grid;grid-template-columns:1fr 1fr;gap:12px}.social-directory>a{display:flex;align-items:center;gap:10px;padding:16px 12px;background:#efede5;min-width:0;transition:background .2s}.social-directory>a:hover{background:#e3e8ec}.social-icon{color:var(--blue);flex-shrink:0}.social-label{min-width:0;flex:1}.social-label strong{display:block;font-family:var(--font-book);font-weight:400;font-size:18px;line-height:1.2}.social-label small{display:block;font-size:11px;margin-top:7px;overflow-wrap:anywhere;line-height:1.45}.contact-postscript{margin-top:32px}.contact-postscript h3{font-size:25px;margin-bottom:14px}.contact-postscript p{font-family:var(--font-book);font-size:17px;line-height:1.6}.contact-postscript a{display:inline-flex;align-items:center;gap:10px;font-size:14px;color:var(--blue)}.draft-status{margin-top:20px;font-size:14px}.draft-status button{color:var(--blue);text-decoration:underline;padding:5px 0}
@@ -56,3 +55,5 @@ input,textarea,select,button{font-family:inherit}
 
 @media(max-width:760px){.flip-layer.flip-mode-fade{display:block}.flip-mobile>.spread{height:auto}.flip-mobile .paper-content{overflow:hidden}}
 @media(prefers-reduced-motion:reduce){.flip-layer.flip-mode-fade{display:none}}
+
+.cv-actions{display:flex;align-items:center;gap:16px}.cv-download{display:flex;padding:10px;border-left:1px solid #c4c8c1}.cv-link{white-space:nowrap}
