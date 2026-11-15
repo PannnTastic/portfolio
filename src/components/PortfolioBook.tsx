@@ -35,17 +35,24 @@ function Paper({ children, title, note, page, className = '' }: { children: Reac
 }
 export default function PortfolioBook() {
  const [chapter, setChapter] = useState(0);
- const [flip, setFlip] = useState<{front:string;back:string;under:string;direction:string}|null>(null);
+ const [flip, setFlip] = useState<{front:string;back:string;under:string;direction:string;mode:'leaf'|'fade'}|null>(null);
  const flipping = useRef(false);
  const bookRef = useRef<HTMLDivElement>(null);
  const [reading, setReading] = useState(false);
  const [contents, setContents] = useState(false);
 
+ const finishFlip = useCallback(() => { setFlip(null); flipping.current = false; }, []);
+ useEffect(() => {
+  if (!flip) return;
+  const timer = window.setTimeout(finishFlip, flip.mode === 'leaf' ? 1100 : 500);
+  return () => window.clearTimeout(timer);
+ }, [flip, finishFlip]);
+
  const touch = useRef<{x:number;y:number}|null>(null);
  const navigate = useCallback((next:number) => {
   if(next < 0 || next >= chapters.length || next === chapter || flipping.current) return;
   const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(!reading && !reduce && window.innerWidth>760) {
+  if(!reading && !reduce) {
    const current=bookRef.current?.querySelectorAll('.chapter')[chapter];
    const incoming=bookRef.current?.querySelectorAll('.chapter')[next];
    const forward=next>chapter;
@@ -53,12 +60,27 @@ export default function PortfolioBook() {
     const source=root?.querySelector(selector); if(!source)return '';
     const clone=source.cloneNode(true) as HTMLElement;
     clone.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));
-    const scroll=source.querySelector('.paper-content')?.scrollTop || 0;
-    const content=clone.querySelector('.paper-content');
-    if(content && scroll) content.innerHTML=`<div style="transform:translateY(-${scroll}px)">${content.innerHTML}</div>`;
+    const sourceContents = source.querySelectorAll('.paper-content');
+    clone.querySelectorAll('.paper-content').forEach((content, index) => {
+     const scroll = sourceContents[index]?.scrollTop || 0;
+     if (scroll) content.innerHTML = `<div style="transform:translateY(-${scroll}px)">${content.innerHTML}</div>`;
+    });
+    const fields = source.querySelectorAll('input, textarea');
+    clone.querySelectorAll('input, textarea').forEach((field, index) => {
+     const value = (fields[index] as HTMLInputElement | HTMLTextAreaElement).value;
+     if (field instanceof HTMLTextAreaElement) field.textContent = value;
+     else field.setAttribute('value', value);
+    });
     return clone.outerHTML;
    };
-   setFlip({front:snapshot(current,forward?'.right-paper':'.left-paper'),back:snapshot(incoming,forward?'.left-paper':'.right-paper'),under:snapshot(current,forward?'.left-paper':'.right-paper'),direction:forward?'forward':'backward'});
+   const mode = window.innerWidth > 760 ? 'leaf' : 'fade';
+   setFlip({
+    mode,
+    front: snapshot(current, mode === 'leaf' ? (forward ? '.right-paper' : '.left-paper') : '.spread'),
+    back: mode === 'leaf' ? snapshot(incoming, forward ? '.left-paper' : '.right-paper') : '',
+    under: mode === 'leaf' ? snapshot(current, forward ? '.left-paper' : '.right-paper') : '',
+    direction: forward ? 'forward' : 'backward',
+   });
    flipping.current=true;
   }
   setChapter(next); setContents(false);
@@ -91,7 +113,7 @@ export default function PortfolioBook() {
  ];
  return <div className={`portfolio ${reading?'reading-mode':''}`}><a href="#book" className="skip-link">Skip to portfolio</a><header className="site-header"><a className="wordmark" href="#introduction" onClick={()=>navigate(0)}>alfan<span>.</span></a><span className="header-note">Alfan, on the web</span><a className="cv-link" href={profile.cv} download>Download CV <ArrowDownToLine size={16}/></a></header>
  <main id="book" tabIndex={-1}><div className="book-toolbar"><button className="contents-toggle" onClick={()=>setContents(!contents)} aria-expanded={contents} aria-controls="chapter-navigation">{contents?<X size={17}/>:<List size={17}/>} Contents</button><nav id="chapter-navigation" aria-label="Chapters" className={`chapter-nav ${contents?'is-open':''}`}>{chapters.map((name,i)=><button key={name} onClick={()=>navigate(i)} aria-current={!reading&&chapter===i?'page':undefined}>{name}</button>)}</nav><button className="reading-toggle" onClick={()=>{setReading(!reading);setContents(false);setFlip(null);flipping.current=false;}}>{reading?<BookOpen size={16}/>:<List size={16}/>} {reading?'Book view':'Read as a page'}</button></div>
- <div className="book-stage"><div className="book" ref={bookRef} onTouchStart={e=>{touch.current={x:e.touches[0].clientX,y:e.touches[0].clientY};}} onTouchEnd={e=>{if(!touch.current||reading)return;const dx=e.changedTouches[0].clientX-touch.current.x,dy=e.changedTouches[0].clientY-touch.current.y;if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5)navigate(chapter+(dx<0?1:-1));touch.current=null;}}>{spreads.map((spread,i)=><div className="chapter" key={slugs[i]} id={`chapter-${slugs[i]}`} hidden={!reading&&chapter!==i}>{spread}</div>)}{flip&&!reading&&<div className={`flip-layer ${flip.direction}`} aria-hidden="true" inert><div className="flip-under" dangerouslySetInnerHTML={{__html:flip.under}}/><div className="flip-leaf" onAnimationEnd={e=>{if(e.target!==e.currentTarget)return;setFlip(null);flipping.current=false;}}><div className="flip-face flip-front" dangerouslySetInnerHTML={{__html:flip.front}}/><div className="flip-face flip-back" dangerouslySetInnerHTML={{__html:flip.back}}/></div></div>}</div></div>
+ <div className="book-stage"><div className="book" ref={bookRef} onTouchStart={e=>{touch.current={x:e.touches[0].clientX,y:e.touches[0].clientY};}} onTouchEnd={e=>{if(!touch.current||reading)return;const dx=e.changedTouches[0].clientX-touch.current.x,dy=e.changedTouches[0].clientY-touch.current.y;if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5)navigate(chapter+(dx<0?1:-1));touch.current=null;}}>{spreads.map((spread,i)=><div className="chapter" key={slugs[i]} id={`chapter-${slugs[i]}`} hidden={!reading&&chapter!==i}>{spread}</div>)}{flip&&!reading&&<div className={`flip-layer ${flip.direction} flip-mode-${flip.mode}`} aria-hidden="true" inert>{flip.mode === 'fade' ? <div className="flip-mobile" onAnimationEnd={finishFlip} dangerouslySetInnerHTML={{__html:flip.front}}/> : <><div className="flip-under" dangerouslySetInnerHTML={{__html:flip.under}}/><div className="flip-leaf" onAnimationEnd={e=>{if(e.target!==e.currentTarget)return;finishFlip();}}><div className="flip-face flip-front" dangerouslySetInnerHTML={{__html:flip.front}}/><div className="flip-face flip-back" dangerouslySetInnerHTML={{__html:flip.back}}/></div></>}</div>}</div></div>
  {!reading&&<div className="book-controls"><button onClick={()=>navigate(chapter-1)} disabled={chapter===0} aria-label="Previous chapter"><ArrowLeft size={19}/><span>Previous</span></button><div aria-live="polite"><span>{chapters[chapter]}</span><span className="page-count">{chapter*2+1} — {chapter*2+2} / 10</span></div><button onClick={()=>navigate(chapter+1)} disabled={chapter===4} aria-label="Next chapter"><span>Next chapter</span><ArrowRight size={19}/></button></div>}</main>
  <footer className="site-footer"><span>© {new Date().getFullYear()} Ahmad Alfan Alfian Irfan</span><span className="navigation-hint">Thanks for reading this far.</span><a href={`mailto:${profile.email}`}>Say hello <ArrowUpRight size={14}/></a></footer></div>;
 }
